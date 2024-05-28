@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -73,12 +73,12 @@ WSGI_APPLICATION = 'rentiha.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'rentiha',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': '0.0.0.0',
-        'PORT': '5432'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'rentiha'),
+        'USER': os.environ.get('DJANGO_DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('DJANGO_DB_HOST', '0.0.0.0'),
+        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
     }
 }
 

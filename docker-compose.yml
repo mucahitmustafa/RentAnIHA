@@ -1,17 +1,30 @@
 version: '3.8'
 
 services:
+  rentiha:
+    build: .
+    ports:
+      - "${APP_PORT}:8000"
+    environment:
+      - DJANGO_DB_HOST=192.168.2.2
+      - DJANGO_DB_PORT=${DB_PORT}
+      - DJANGO_DB_NAME=${DB_NAME}
+      - DJANGO_DB_USER=${DB_USER}
+      - DJANGO_DB_PASSWORD=${DB_PASSWORD}
+    restart: unless-stopped
 
   postgresql:
     image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=rentiha
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    expose:
+      - ${DB_PORT}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     restart: unless-stopped
 
 volumes:
