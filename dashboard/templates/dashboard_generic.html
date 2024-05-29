@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Rent An IHA{% endblock %}</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     {% load static %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
@@ -15,43 +17,86 @@
     </style>
 </head>
 <body>
+<div class="container-fluid vh-100 col-lg-10 col-md-10 justify-content-center align-items-center">
 
-<header>
+    <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12">
+            <div class="card border-0 vh-100" style="background-color: rgba(100,100,100,0.5); ">
+                <div class="card-body">
 
+                    <header style="min-height: 5%;">
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                            <div class="container-fluid">
+                                <a class="navbar-brand" href="#">Rent An 'İHA'</a>
+                                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                                        aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" aria-current="page"
+                                               href="/dashboard/ihas">'İHA's</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/dashboard/rentals">Rentals</a>
+                                        </li>
+                                        {% if user.is_staff %}
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/dashboard/categories">'İHA' Categories</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/dashboard/members">Members</a>
+                                        </li>
 
-    <p>Welcome, {{ user.username }}!</p>
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
+                                        {% endif %}
+                                    </ul>
 
-    {% if user.is_staff %}
-    <p>You are an administrator.</p>
-    {% else %}
-    <p>You are a regular user.</p>
-    {% endif %}
+                                    <div class="d-flex">
+                                        <p>Welcome, {{ user.username }}!</p>
+                                        {% if user.is_staff %}
+                                        <p style="margin-left: 10px;">(Administrator)</p>
+                                        {% endif %}
+                                        <form method="post" action="{% url 'logout' %}" style="margin-left: 20px;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-secondary btn-block">Logout</button>
+                                        </form>
+                                    </div>
 
+                                </div>
+                            </div>
 
-    <!-- Add a link to the dashboard/members page if the user is an admin -->
-    {% if user.is_staff %}
-    <a href="/dashboard/members">Members</a>
-    <a href="/dashboard/categories">IHA Categories</a>
-    {% endif %}
-    <a href="/dashboard/rentals">Rentals</a>
-    <a href="/dashboard/ihas">IHAs</a>
+                        </nav>
+                    </header>
 
+                    <main style="min-height: 94%; display: flex; flex-direction: column; flex-grow: 1;" class="wrapper">
+                        {% block content %}{% endblock %}
+                    </main>
 
-</header>
+                    <footer style="flex-shrink: 0; text-align: center;">
+                        <p style="color: white;">Designed and implemented by Mücahit Mustafa YILDIZ <<a
+                                style="color: white;"
+                                href="mailto:mucahitmustafay@gmail.com">mucahitmustafay@gmail.com</a>></p>
 
-<main>
-    {% block content %}{% endblock %}
-</main>
-
-<footer>
-
-</footer>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
+    $(document).ready(function () {
+        var url = window.location;
+        $('ul.navbar-nav a').filter(function () {
+            return url.toString().includes(this.href);
+        }).addClass('active');
+        $('ul.navbar-nav a').filter(function () {
+            return !url.toString().includes(this.href);
+        }).removeClass('active');
+    });
+
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
