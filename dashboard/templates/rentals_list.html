@@ -1,0 +1,99 @@
+{% extends "dashboard_generic.html" %}
+
+{% block content %}
+
+
+<table>
+    <thead>
+    <tr>
+        <th>IHA</th>
+        <th>User</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Is Returned</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for rental in rentals %}
+    <tr>
+        <td>
+            {{ rental.iha.category }} - {{ rental.iha.brand }} - {{ rental.iha.model }}
+        </td>
+        <td>
+            {{ rental.user.username }}
+        </td>
+        <td>
+            {{ rental.start_date }}
+        </td>
+        <td>
+            {{ rental.end_date }}
+        </td>
+        <td>
+            {% if rental.is_returned %}
+            Yes
+            {% else %}
+            No
+            {% endif %}
+        </td>
+        <td>
+
+            {% if user.is_staff %}
+            <button type="button" onclick="deleteRental({{ rental.id }})">Delete</button>
+            {% else %}
+
+            {% if rental.is_returned %}
+            {% else %}
+            <!--            TODO: Open edit rental popup.-->
+            <button type="button" onclick="editRental({{ rental.id }})">Edit</button>
+            {% endif %}
+
+            {% endif %}
+
+            {% if rental.is_returned %}
+            {% else %}
+            <!--            TODO: Open rental popup.-->
+            <button type="button" onclick="endRental({{ iha.id }})">End Rental</button>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script>
+
+    function endRental(rentalID) {
+        if (confirm('Are you sure you want to end this rental?')) {
+
+        }
+    }
+
+    function editRental(rentalID) {
+    }
+
+
+    function deleteRental(rentalID) {
+        if (confirm('Are you sure you want to delete this rental?')) {
+            const csrfToken = getCookie('csrftoken');
+            fetch(rentalID, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data);
+                    } else {
+                        alert('Rental deleted successfully')
+                    }
+                });
+        }
+
+
+    }
+</script>
+
+{% endblock %}

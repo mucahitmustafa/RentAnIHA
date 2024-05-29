@@ -1,0 +1,61 @@
+{% extends "dashboard_generic.html" %}
+
+{% block content %}
+
+<table>
+    <thead>
+    <tr>
+        <th>Username</th>
+        <th>Mail Address</th>
+        <th>Last Login</th>
+        <th>Added Date</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for member in members %}
+    <tr>
+        <td>
+            <a href="{{ member.id }}">{{ member.username }}</a>
+        </td>
+        <td>
+            {{ member.email }}
+        </td>
+        <td>
+            {{ member.last_login }}
+        </td>
+        <td>
+            {{ member.date_joined }}
+        </td>
+        <td>
+            <button type="button" onclick="deleteUser({{ member.id }})">Delete</button>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script>
+
+    function deleteUser(userID) {
+        if (confirm('Are you sure you want to delete this user?')) {
+            const csrfToken = getCookie('csrftoken');
+            fetch(userID, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data);
+                    } else {
+                        alert('User deleted successfully')
+                    }
+                });
+        }
+    }
+</script>
+
+{% endblock %}

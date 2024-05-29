@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Rent An IHA{% endblock %}</title>
+
+</head>
+<body>
+
+<header>
+
+
+<p>Welcome, {{ user.username }}!</p>
+<form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+
+{% if user.is_staff %}
+<p>You are an administrator.</p>
+{% else %}
+<p>You are a regular user.</p>
+{% endif %}
+
+
+<!-- Add a link to the dashboard/members page if the user is an admin -->
+{% if user.is_staff %}
+<a href="/dashboard/members">Members</a>
+<a href="/dashboard/categories">IHA Categories</a>
+{% endif %}
+<a href="/dashboard/rentals">Rentals</a>
+<a href="/dashboard/ihas">IHAs</a>
+
+
+</header>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+
+</footer>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+</body>
+</html>

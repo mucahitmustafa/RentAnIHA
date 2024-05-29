@@ -27,3 +27,4 @@ class Rental(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    is_returned = models.BooleanField(default=False)

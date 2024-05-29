@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'rentiha',
-    'members'
+    'members',
+    'dashboard'
 ]
 
 MIDDLEWARE = [
@@ -133,3 +134,4 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
 
 ACCOUNT_LOGIN_ON_SIGNUP = False
+LOGOUT_REDIRECT_URL = '/login/'
