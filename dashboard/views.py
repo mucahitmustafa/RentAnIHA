@@ -1,13 +1,11 @@
 import json
+
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages
 
-from django.http import HttpResponse
 from dashboard.models import Rental, Iha, Category
-from django.contrib.auth.models import User
 
 
 def rentals_view(request):
