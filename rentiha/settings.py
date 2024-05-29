@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rentiha',
     'members',
     'dashboard',
-    'bootstrap5'
+    'bootstrap5',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 ACCOUNT_LOGIN_ON_SIGNUP = False
 LOGOUT_REDIRECT_URL = '/login/'
+REST_FRAMEWORK = {
+    'DATE_FORMAT': "%Y-%m-%d",
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
+    'DATE_INPUT_FORMATS': ["%Y-%m-%d"]
+}

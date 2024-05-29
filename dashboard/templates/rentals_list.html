@@ -3,75 +3,174 @@
 {% block content %}
 
 
-<table>
-    <thead>
-    <tr>
-        <th>IHA</th>
-        <th>User</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th>Is Returned</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for rental in rentals %}
-    <tr>
-        <td>
-            {{ rental.iha.category }} - {{ rental.iha.brand }} - {{ rental.iha.model }}
-        </td>
-        <td>
-            {{ rental.user.username }}
-        </td>
-        <td>
-            {{ rental.start_date }}
-        </td>
-        <td>
-            {{ rental.end_date }}
-        </td>
-        <td>
-            {% if rental.is_returned %}
-            Yes
-            {% else %}
-            No
-            {% endif %}
-        </td>
-        <td>
+<div class="row col-md-12 col-lg-12">
 
-            {% if user.is_staff %}
-            <button type="button" onclick="deleteRental({{ rental.id }})">Delete</button>
-            {% else %}
+    <div class="container mt-2">
 
-            {% if rental.is_returned %}
-            {% else %}
-            <!--            TODO: Open edit rental popup.-->
-            <button type="button" onclick="editRental({{ rental.id }})">Edit</button>
-            {% endif %}
+        <h2>'İHA' Rentals</h2>
 
-            {% endif %}
+        <input type="text" class="form-control" placeholder="Search Rental" id="rentalSearchInput">
+        <br>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>'İHA'</th>
+                <th>User</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Is Returned</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
 
-            {% if rental.is_returned %}
-            {% else %}
-            <!--            TODO: Open rental popup.-->
-            <button type="button" onclick="endRental({{ iha.id }})">End Rental</button>
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+            <tbody id="tableDetails">
+            {% for rental in rentals %}
+            <tr>
+                <td>
+                    {{ rental.iha.category.name }} - {{ rental.iha.brand }} - {{ rental.iha.model }}
+                </td>
+                <td>
+                    {{ rental.user.username }}
+                </td>
+                <td>
+                    {{ rental.start_date }}
+                </td>
+                <td>
+                    {{ rental.end_date }}
+                </td>
+                <td>
+                    {% if rental.is_returned %}
+                    <span class="badge bg-success">Returned</span>
+                    {% else %}
+                    <span class="badge bg-danger">Not Returned</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if rental.is_returned %}
+                    {% else %}
+                    <button type="button" class="btn btn-success" onclick="endRental({{ rental.id }})">
+                        End the Lease
+                    </button>
+
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#editRentalModal"
+                            data-rental-id="{{ rental.id }}" data-rental-start-date="{{ rental.start_date }}"
+                            data-rental-end-date="{{ rental.end_date }}">
+                        Edit
+                    </button>
+                    {% endif %}
+
+                    {% if user.is_staff %}
+                    <button type="button" class="btn btn-danger" onclick="deleteRental({{ rental.id }})">
+                        Delete
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="editRentalModal" tabindex="-1" aria-labelledby="editRentalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editRentalLabel">Edit Rental</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="editRentalStartDateInput" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="editRentalStartDateInput">
+                </div>
+                <div class="mb-3">
+                    <label for="editRentalEndDateInput" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="editRentalEndDateInput">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="editRentalBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var editModal = document.getElementById('editRentalModal');
+        var rentalStartDateInput = document.getElementById('editRentalStartDateInput');
+        var rentalEndDateInput = document.getElementById('editRentalEndDateInput');
+        var saveButton = document.getElementById('editRentalBtn')
+
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var rentalStartDate = button.getAttribute('data-rental-start-date');
+            var rentalEndDate = button.getAttribute('data-rental-end-date');
+            var rentalId = button.getAttribute('data-rental-id');
+            saveButton.setAttribute('data-rental-id', rentalId);
+            rentalStartDateInput.value = rentalStartDate;
+            rentalEndDateInput.value = rentalEndDate;
+        });
+
+        saveButton.onclick = function () {
+            var rentalID = this.getAttribute('data-rental-id');
+            var newStartDate = rentalStartDateInput.value;
+            var newEndDate = rentalEndDateInput.value;
+            const csrfToken = getCookie('csrftoken');
+            fetch(rentalID + "/", {
+                method: 'PUT',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({startDate: newStartDate, endDate: newEndDate})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data);
+                    } else {
+                        location.reload()
+                        alert("'İHA' rental successfully updated")
+                    }
+                });
+
+        };
+    });
+
+    $(document).ready(function () {
+        $("#rentalSearchInput").on("keyup", function () {
+            var textToSearch = $(this).val().toLowerCase();
+            $("#tableDetails tr").filter(function () {
+                $(this).toggle($(this).text()
+                    .toLowerCase().indexOf(textToSearch) > -1)
+            });
+        });
+    });
 
     function endRental(rentalID) {
-        if (confirm('Are you sure you want to end this rental?')) {
-
+        if (confirm('Are you sure you want to end the lease?')) {
+            const csrfToken = getCookie('csrftoken');
+            fetch(rentalID + "/", {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data);
+                    } else {
+                        location.reload()
+                        alert("'İHA' rental ended successfully")
+                    }
+                });
         }
     }
-
-    function editRental(rentalID) {
-    }
-
 
     function deleteRental(rentalID) {
         if (confirm('Are you sure you want to delete this rental?')) {
@@ -87,12 +186,11 @@
                     if (data.message) {
                         alert(data);
                     } else {
-                        alert('Rental deleted successfully')
+                        location.reload()
+                        alert("'İHA' rental deleted successfully")
                     }
                 });
         }
-
-
     }
 </script>
 

@@ -30,7 +30,7 @@ def rentals_view(request):
 
     else:
         if request.user.is_staff:
-            _rentals = Rental.objects.filter()
+            _rentals = Rental.objects.all()
         else:
             _rentals = Rental.objects.filter(user=request.user)
 
@@ -53,8 +53,16 @@ def rental_view(request, id):
             return HttpResponse('{}'.format(e), status=400)
 
     elif request.method == 'PUT' and (request.user.is_staff or _rental.user == request.user):
-        # TODO: Edit rental.
-        return render(request, 'rentals_edit.html')
+        try:
+            _body = json.loads(request.body)
+            _rental = Rental.objects.get(id=id)
+            _rental.start_date = _body['startDate']
+            _rental.end_date = _body['endDate']
+            _rental.save()
+        except Exception as e:
+            return HttpResponse('{}'.format(e), status=400)
+
+        return HttpResponse('{}', status=200)
 
     elif request.method == 'PATCH' and (request.user.is_staff or _rental.user == request.user):
         try:
@@ -74,7 +82,7 @@ def members_view(request):
     if not request.user.is_staff:
         return HttpResponse('Unauthorized', status=401)
 
-    _members = User.objects.filter()
+    _members = User.objects.all()
     if not _members.exists():
         _members = []
     return render(request, 'members_list.html', {'members': _members})
@@ -94,8 +102,7 @@ def member_view(request, id):
         except Exception as e:
             return HttpResponse('{}'.format(e), status=400)
 
-    else:
-        return render(request, 'members_detail.html', {'member': _user})
+    return HttpResponse('Unauthorized', status=401)
 
 
 def iha_categories_view(request):
@@ -119,7 +126,7 @@ def iha_categories_view(request):
             return HttpResponse('{}'.format(e), status=400)
 
     else:
-        _categories = Category.objects.filter()
+        _categories = Category.objects.all()
         if not _categories.exists():
             _categories = []
         return render(request, 'categories_list.html', {'categories': _categories})
@@ -177,11 +184,11 @@ def ihas_view(request):
         return HttpResponse('{}', status=200)
 
     else:
-        _ihas = Iha.objects.filter()
+        _ihas = Iha.objects.all()
         if not _ihas.exists():
             _ihas = []
 
-        _categories = Category.objects.filter()
+        _categories = Category.objects.all()
         if not _categories.exists():
             _categories = []
 
