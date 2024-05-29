@@ -96,5 +96,7 @@ python manage.py test
 ![Members Page](screenshots/members_for_admins.png)
 
 ## Admin Panel
+_Go to the http://localhost:8000/admin page to access the admin panel._
 
 ![Admin Panel](screenshots/admin_panel.png)
+
