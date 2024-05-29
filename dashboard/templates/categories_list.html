@@ -3,44 +3,169 @@
 {% block content %}
 
 
-{% if user.is_staff %}
-<!--TODO: Open new IHA Category window-->
-<a href="add_category">Add İHA Category</a>
-{% endif %}
+<div class="row col-md-12 col-lg-12">
 
+    <div class="container mt-2">
 
-<table>
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Added Date</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for category in categories %}
-    <tr>
-        <td>
-            {{ category.name }}
-        </td>
-        <td>
-            {{ category.added_date }}
-        </td>
+        <div class="text-end">
+            <button type="button" class="btn btn-success col-md-3 col-lg-2" data-bs-toggle="modal"
+                    data-bs-target="#addCategoryModal">
+                + Add 'İHA' Category
+            </button>
+        </div>
 
-        <td>
-            <!--            TODO: Open edit popup.-->
-            <button type="button" onclick="editCategory({{ category.id }})">Edit</button>
-            <button type="button" onclick="deleteCategory({{ category.id }})">Delete</button>
+        <h2>'İHA' Categories</h2>
 
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        <input type="text" class="form-control" placeholder="Search Categories By Name" id="categorySearchInput">
+        <br>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Added Date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody id="tableDetails">
+            {% for category in categories %}
+            <tr>
+                <td>
+                    {{ category.name }}
+                </td>
+                <td>
+                    {{ category.added_date }}
+                </td>
+
+                <td>
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#editCategoryModal"
+                            data-category-id="{{ category.id }}" data-category-name="{{ category.name }}">
+                        Edit
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="deleteCategory({{ category.id }})">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryLabel">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="editCategoryNameInput" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="editCategoryNameInput">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="editCategoryNameBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryLabel">New Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="addCategoryNameInput" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="addCategoryNameInput">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="addCategory()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var editModal = document.getElementById('editCategoryModal');
+        var categoryNameInput = document.getElementById('editCategoryNameInput');
+        var saveButton = document.getElementById('editCategoryNameBtn')
 
-    function editCategory(categoryID) {
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var categoryName = button.getAttribute('data-category-name');
+            var categoryId = button.getAttribute('data-category-id');
+            saveButton.setAttribute('data-category-id', categoryId);
+            categoryNameInput.value = categoryName;
+        });
+
+        saveButton.onclick = function () {
+            var categoryID = this.getAttribute('data-category-id');
+            var newCategoryName = categoryNameInput.value;
+            const csrfToken = getCookie('csrftoken');
+            fetch(categoryID, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({name: newCategoryName})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data);
+                    } else {
+                        location.reload()
+                        alert('İHA Category successfully updated')
+                    }
+                });
+
+        };
+    });
+
+    $(document).ready(function () {
+        $("#categorySearchInput").on("keyup", function () {
+            var textToSearch = $(this).val().toLowerCase();
+            $("#tableDetails tr").filter(function () {
+                $(this).toggle($(this).text()
+                    .toLowerCase().indexOf(textToSearch) > -1)
+            });
+        });
+    });
+
+    function addCategory() {
+        var categoryNameInput = document.getElementById('addCategoryNameInput');
+
+        const csrfToken = getCookie('csrftoken');
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({name: categoryNameInput.value})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data);
+                } else {
+                    location.reload()
+                    alert('İHA Category successfully created')
+                }
+            });
     }
 
     function deleteCategory(categoryID) {
@@ -57,6 +182,7 @@
                     if (data.message) {
                         alert(data);
                     } else {
+                        location.reload()
                         alert('İHA Category deleted successfully')
                     }
                 });
