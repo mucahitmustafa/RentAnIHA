@@ -79,19 +79,23 @@ python manage.py test
 
 ![İHAs Page](screenshots/ihas_for_users.png)
 
-### İHAs Page for Administators
+### İHAs Page for Administrators
 
 ![İHAs Page](screenshots/ihas_for_admins.png)
+
+
+## Add İHA Page for Administrators
+![Add İHA Page](screenshots/add_iha_for_admins.png)
 
 ## Rentals Page for Users
 
 ![Rentals Page](screenshots/rentals_for_users.png)
 
-## Rentals Page for Administators
+## Rentals Page for Administrators
 
 ![Rentals Page](screenshots/rentals_for_admins.png)
 
-## Members Page for Administators
+## Members Page for Administrators
 
 ![Members Page](screenshots/members_for_admins.png)
 
