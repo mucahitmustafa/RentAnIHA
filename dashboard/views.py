@@ -159,6 +159,22 @@ def iha_category_view(request, id):
     return HttpResponse('Unauthorized', status=401)
 
 
+def categorized_ihas_view(request, category):
+    if request.user.is_anonymous:
+        return redirect('login')
+
+    _category = Category.objects.get(name=category)
+    _ihas = Iha.objects.filter(category=_category)
+    if not _ihas.exists():
+        _ihas = []
+
+    _categories = Category.objects.all()
+    if not _categories.exists():
+        _categories = []
+
+    return render(request, 'ihas_list.html', {'ihas': _ihas, 'categories': _categories})
+
+
 def ihas_view(request):
     if request.user.is_anonymous:
         return redirect('login')

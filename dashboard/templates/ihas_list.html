@@ -5,8 +5,16 @@
 <div class="row col-md-12 col-lg-12">
 
     <div class="container mt-2">
-        <!--        TODO: Add Category Filtering With Using Server-Side Datetable-->
-        <p>{{ categories }}</p>
+        <h4>Filter by Category</h4>
+        {% for category in categories %}
+        <a type="button" class="btn btn-primary" href="/dashboard/ihas/{{ category.name }}">
+            {{ category.name }}
+        </a>
+        {% endfor %}
+
+        <a type="button" class="btn btn-secondary" href="/dashboard/ihas/">
+            All Categories
+        </a>
 
         {% if user.is_staff %}
         <div class="text-end">
