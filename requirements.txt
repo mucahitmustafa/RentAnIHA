@@ -2,3 +2,4 @@ django==4.2.13
 psycopg2==2.9.9
 pycodestyle==2.11.1
 django-allauth==0.63.2
+django-bootstrap-v5==1.0.11

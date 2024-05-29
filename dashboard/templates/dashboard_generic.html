@@ -3,33 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Rent An IHA{% endblock %}</title>
-
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <style>
+        body {
+            background-image: url('{% static 'background.jpg' %}');
+            background-size: cover;
+        }
+    </style>
 </head>
 <body>
 
 <header>
 
 
-<p>Welcome, {{ user.username }}!</p>
-<form method="post" action="{% url 'logout' %}">
-    {% csrf_token %}
-    <button type="submit">Logout</button>
-</form>
+    <p>Welcome, {{ user.username }}!</p>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
 
-{% if user.is_staff %}
-<p>You are an administrator.</p>
-{% else %}
-<p>You are a regular user.</p>
-{% endif %}
+    {% if user.is_staff %}
+    <p>You are an administrator.</p>
+    {% else %}
+    <p>You are a regular user.</p>
+    {% endif %}
 
 
-<!-- Add a link to the dashboard/members page if the user is an admin -->
-{% if user.is_staff %}
-<a href="/dashboard/members">Members</a>
-<a href="/dashboard/categories">IHA Categories</a>
-{% endif %}
-<a href="/dashboard/rentals">Rentals</a>
-<a href="/dashboard/ihas">IHAs</a>
+    <!-- Add a link to the dashboard/members page if the user is an admin -->
+    {% if user.is_staff %}
+    <a href="/dashboard/members">Members</a>
+    <a href="/dashboard/categories">IHA Categories</a>
+    {% endif %}
+    <a href="/dashboard/rentals">Rentals</a>
+    <a href="/dashboard/ihas">IHAs</a>
 
 
 </header>

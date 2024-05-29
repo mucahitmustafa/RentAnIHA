@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Rent An IHA{% endblock %}</title>
+    {% load static %}
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
 
+    <style>
+        body {
+            background-image: url('{% static 'background.jpg' %}');
+            background-size: cover;
+        }
+    </style>
 </head>
 <body>
-
-<header>
-
-</header>
-
 <main>
-    {% block content %}{% endblock %}
+    <div class="container-fluid vh-100 d-flex align-items-center">
+        <div class="row col-md-12 col-lg-12">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
 </main>
-
-<footer>
-
-</footer>
-
 </body>
 </html>
