@@ -2,40 +2,64 @@
 
 {% block content %}
 
-<table>
-    <thead>
-    <tr>
-        <th>Username</th>
-        <th>Mail Address</th>
-        <th>Last Login</th>
-        <th>Added Date</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for member in members %}
-    <tr>
-        <td>
-            <a href="{{ member.id }}">{{ member.username }}</a>
-        </td>
-        <td>
-            {{ member.email }}
-        </td>
-        <td>
-            {{ member.last_login }}
-        </td>
-        <td>
-            {{ member.date_joined }}
-        </td>
-        <td>
-            <button type="button" onclick="deleteUser({{ member.id }})">Delete</button>
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+
+<div class="row col-md-12 col-lg-12">
+
+    <div class="container mt-2">
+        <h2>Members</h2>
+
+        <input type="text" class="form-control" placeholder="Search Members" id="userSearchInput">
+        <br>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Mail Address</th>
+                <th>Last Login</th>
+                <th>Added Date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody id="tableDetails">
+            {% for member in members %}
+
+            <tr>
+                <td>
+                    {{ member.username }}
+                </td>
+                <td>
+                    {{ member.email }}
+                </td>
+                <td>
+                    {{ member.last_login }}
+                </td>
+                <td>
+                    {{ member.date_joined }}
+                </td>
+                <td>
+                    {% if member.is_staff %}
+                    {% else %}
+                    <button type="button" class="btn btn-danger" onclick="deleteUser({{ member.id }})">Delete</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <script>
+     $(document).ready(function () {
+        $("#userSearchInput").on("keyup", function () {
+            var textToSearch = $(this).val().toLowerCase();
+            $("#tableDetails tr").filter(function () {
+                $(this).toggle($(this).text()
+                    .toLowerCase().indexOf(textToSearch) > -1)
+            });
+        });
+    });
 
     function deleteUser(userID) {
         if (confirm('Are you sure you want to delete this user?')) {
