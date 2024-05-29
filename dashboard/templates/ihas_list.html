@@ -255,7 +255,7 @@
             var newIhaSerialNumber = editIhaSerialNumberInput.value;
 
             const csrfToken = getCookie('csrftoken');
-            fetch(ihaId, {
+            fetch('/dashboard/ihas/' + ihaId, {
                 method: 'PUT',
                 headers: {
                     'X-CSRFToken': csrfToken
@@ -331,7 +331,7 @@
         var addIhaSerialNumberInput = document.getElementById('addIhaSerialNumberInput');
 
         const csrfToken = getCookie('csrftoken');
-        fetch('', {
+        fetch('/dashboard/ihas/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken
@@ -358,7 +358,7 @@
     function deleteIha(ihaID) {
         if (confirm('Are you sure you want to delete this IHA?')) {
             const csrfToken = getCookie('csrftoken');
-            fetch(ihaID, {
+            fetch('/dashboard/ihas/' + ihaID, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRFToken': csrfToken
