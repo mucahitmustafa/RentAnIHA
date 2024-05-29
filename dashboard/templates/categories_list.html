@@ -54,7 +54,6 @@
     </div>
 </div>
 
-<!-- Modal -->
 <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -91,7 +90,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="addCategory()">Save Changes</button>
+                <button type="button" class="btn btn-success" onclick="addCategory()">Save</button>
             </div>
         </div>
     </div>
@@ -129,7 +128,7 @@
                         alert(data);
                     } else {
                         location.reload()
-                        alert('İHA Category successfully updated')
+                        alert("'İHA' Category successfully updated")
                     }
                 });
 
@@ -163,7 +162,7 @@
                     alert(data);
                 } else {
                     location.reload()
-                    alert('İHA Category successfully created')
+                    alert("'İHA' Category successfully created")
                 }
             });
     }
@@ -183,7 +182,7 @@
                         alert(data);
                     } else {
                         location.reload()
-                        alert('İHA Category deleted successfully')
+                        alert("'İHA' Category deleted successfully")
                     }
                 });
         }

@@ -2,72 +2,349 @@
 
 {% block content %}
 
+<div class="row col-md-12 col-lg-12">
 
-{% if user.is_staff %}
-<!--TODO: Open new IHA window-->
-<a href="add_iha">Add İHA</a>
-{% endif %}
+    <div class="container mt-2">
+        <!--        TODO: Add Category Filtering With Using Server-Side Datetable-->
+        <p>{{ categories }}</p>
 
-<p>{{ categories }}</p>
+        {% if user.is_staff %}
+        <div class="text-end">
+            <button type="button" class="btn btn-success col-md-3 col-lg-2" data-bs-toggle="modal"
+                    data-bs-target="#addIhaModal">
+                + Add 'İHA'
+            </button>
+        </div>
+        {% endif %}
 
+        <h2>'İHA's</h2>
 
-<table>
-    <thead>
-    <tr>
-        <th>Category</th>
-        <th>Brand</th>
-        <th>Model</th>
-        <th>Weight</th>
-        <th>Serial Number</th>
-        <th>Added Date</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for iha in ihas %}
-    <tr>
-        <td>
-            {{ iha.category }}
-        </td>
-        <td>
-            {{ iha.brand }}
-        </td>
-        <td>
-            {{ iha.model }}
-        </td>
-        <td>
-            {{ iha.weight }}
-        </td>
-        <td>
-            {{ iha.serial_number }}
-        </td>
-        <td>
-            {{ iha.added_date }}
-        </td>
-        <td>
-            <a href="{{ iha.id }}">Detail</a>
+        <input type="text" class="form-control" placeholder="Search 'İHA's" id="ihaSearchInput">
+        <br>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Category</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Weight</th>
+                <th>Serial Number</th>
+                <th>Added Date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
 
-            {% if user.is_staff %}
-            <!--            TODO: Open edit popup.-->
-            <button type="button" onclick="editIha({{ iha.id }})">Edit</button>
-            <button type="button" onclick="deleteIha({{ iha.id }})">Delete</button>
-            {% else %}
-            <!--            TODO: Open rent popup.-->
-            <button type="button" onclick="rentIha({{ iha.id }})">Rent</button>
-            {% endif %}
+            <tbody id="tableDetails">
+            {% for iha in ihas %}
+            <tr>
+                <td>
+                    {{ iha.category }}
+                </td>
+                <td>
+                    {{ iha.brand }}
+                </td>
+                <td>
+                    {{ iha.model }}
+                </td>
+                <td>
+                    {{ iha.weight }}
+                </td>
+                <td>
+                    {{ iha.serial_number }}
+                </td>
+                <td>
+                    {{ iha.added_date }}
+                </td>
 
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+                <td>
+
+                    {% if user.is_staff %}
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#editIhaModal"
+                            data-iha-id="{{ iha.id }}" data-iha-category="{{ iha.category }}"
+                            data-iha-brand="{{ iha.brand }}" data-iha-model="{{ iha.model }}"
+                            data-iha-weight="{{ iha.weight }}" data-iha-serial-number="{{ iha.serial_number }}">
+                        Edit
+                    </button>
+
+                    <button type="button" class="btn btn-danger" onclick="deleteIha({{ iha.id }})">
+                        Delete
+                    </button>
+
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#rentIhaModal"
+                            data-iha-id="{{ iha.id }}">
+                        Rent
+                    </button>
+
+                    {% else %}
+
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#rentIhaModal" data-iha-id="{{ iha.id }}">
+                        Rent
+                    </button>
+
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="editIhaModal" tabindex="-1" aria-labelledby="editIhaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editIhaLabel">Edit 'İHA'</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="editIhaCategoryInput" class="form-label">Category</label>
+                    <select id="editIhaCategoryInput" class="form-select">
+                        {% for category in categories %}
+                        <option value="{{ category.name }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="editIhaBrandInput" class="form-label">Brand</label>
+                    <input type="text" class="form-control" id="editIhaBrandInput">
+                </div>
+                <div class="mb-3">
+                    <label for="editIhaModelInput" class="form-label">Model</label>
+                    <input type="text" class="form-control" id="editIhaModelInput">
+                </div>
+                <div class="mb-3">
+                    <label for="editIhaWeightInput" class="form-label">Weight</label>
+                    <input type="number" class="form-control" id="editIhaWeightInput">
+                </div>
+                <div class="mb-3">
+                    <label for="editIhaSerialNumberInput" class="form-label">Serial Number</label>
+                    <input type="text" class="form-control" id="editIhaSerialNumberInput">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="editIhaBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="rentIhaModal" tabindex="-1" aria-labelledby="rentIhaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rentIhaLabel">Rent 'İHA'</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="rentIhaStartDateInput" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="rentIhaStartDateInput">
+                </div>
+                <div class="mb-3">
+                    <label for="rentIhaEndDateInput" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="rentIhaEndDateInput">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="rentIhaBtn">Rent 'İHA'</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addIhaModal" tabindex="-1" aria-labelledby="addIhaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addIhaLabel">New 'İHA'</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="addIhaCategoryInput" class="form-label">Category</label>
+                    <select id="addIhaCategoryInput" class="form-select">
+                        {% for category in categories %}
+                        <option value="{{ category.name }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="addIhaBrandInput" class="form-label">Brand</label>
+                    <input type="text" class="form-control" id="addIhaBrandInput">
+                </div>
+                <div class="mb-3">
+                    <label for="addIhaModelInput" class="form-label">Model</label>
+                    <input type="text" class="form-control" id="addIhaModelInput">
+                </div>
+                <div class="mb-3">
+                    <label for="addIhaWeightInput" class="form-label">Weight</label>
+                    <input type="number" class="form-control" id="addIhaWeightInput">
+                </div>
+                <div class="mb-3">
+                    <label for="addIhaSerialNumberInput" class="form-label">Serial Number</label>
+                    <input type="text" class="form-control" id="addIhaSerialNumberInput">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="addIha()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var editModal = document.getElementById('editIhaModal');
+        var rentModal = document.getElementById('rentIhaModal');
 
-    function rentIha(ihaID) {
-    }
+        var editIhaCategoryInput = document.getElementById('editIhaCategoryInput');
+        var editIhaBrandInput = document.getElementById('editIhaBrandInput');
+        var editIhaModelInput = document.getElementById('editIhaModelInput');
+        var editIhaWeightInput = document.getElementById('editIhaWeightInput');
+        var editIhaSerialNumberInput = document.getElementById('editIhaSerialNumberInput');
+        var editIhaButton = document.getElementById('editIhaBtn')
+        var rentIhaButton = document.getElementById('rentIhaBtn')
 
-    function editIha(ihaID) {
+        rentModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var ihaId = button.getAttribute('data-iha-id');
+            rentIhaButton.setAttribute('data-iha-id', ihaId);
+        });
+
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var ihaCategory = button.getAttribute('data-iha-category');
+            var ihaBrand = button.getAttribute('data-iha-brand');
+            var ihaModel = button.getAttribute('data-iha-model');
+            var ihaWeight = button.getAttribute('data-iha-weight');
+            var ihaSerialNumber = button.getAttribute('data-iha-serial-number');
+            var ihaId = button.getAttribute('data-iha-id');
+            editIhaButton.setAttribute('data-iha-id', ihaId);
+            editIhaCategoryInput.value = ihaCategory;
+            editIhaBrandInput.value = ihaBrand;
+            editIhaModelInput.value = ihaModel;
+            editIhaWeightInput.value = ihaWeight;
+            editIhaSerialNumberInput.value = ihaSerialNumber;
+        });
+
+        editIhaButton.onclick = function () {
+            var ihaId = this.getAttribute('data-iha-id');
+            var newIhaCategory = editIhaCategoryInput.value;
+            var newIhaBrand = editIhaBrandInput.value;
+            var newIhaModel = editIhaModelInput.value;
+            var newIhaWeight = editIhaWeightInput.value;
+            var newIhaSerialNumber = editIhaSerialNumberInput.value;
+
+            const csrfToken = getCookie('csrftoken');
+            fetch(ihaId, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    category: newIhaCategory,
+                    brand: newIhaBrand,
+                    model: newIhaModel,
+                    weight: newIhaWeight,
+                    serialNumber: newIhaSerialNumber
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data);
+                    } else {
+                        location.reload()
+                        alert("İHA' successfully updated")
+                    }
+                });
+
+        };
+
+        rentIhaButton.onclick = function () {
+            var ihaId = this.getAttribute('data-iha-id');
+            var userId = '{{ user.id }}';
+            var rentIhaStartDateInput = document.getElementById('rentIhaStartDateInput');
+            var rentIhaEndDateInput = document.getElementById('rentIhaEndDateInput');
+
+            const csrfToken = getCookie('csrftoken');
+            fetch('/dashboard/rentals/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    ihaId: ihaId,
+                    userId: userId,
+                    startDate: rentIhaStartDateInput.value,
+                    endDate: rentIhaEndDateInput.value
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data);
+                    } else {
+                        location.reload()
+                        alert("İHA' successfully rented")
+                    }
+                });
+
+
+        };
+    });
+
+    $(document).ready(function () {
+        $("#ihaSearchInput").on("keyup", function () {
+            var textToSearch = $(this).val().toLowerCase();
+            $("#tableDetails tr").filter(function () {
+                $(this).toggle($(this).text()
+                    .toLowerCase().indexOf(textToSearch) > -1)
+            });
+        });
+    });
+
+    function addIha() {
+        var addIhaCategoryInput = document.getElementById('addIhaCategoryInput');
+        var addIhaBrandInput = document.getElementById('addIhaBrandInput');
+        var addIhaModelInput = document.getElementById('addIhaModelInput');
+        var addIhaWeightInput = document.getElementById('addIhaWeightInput');
+        var addIhaSerialNumberInput = document.getElementById('addIhaSerialNumberInput');
+
+        const csrfToken = getCookie('csrftoken');
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                category: addIhaCategoryInput.value,
+                brand: addIhaBrandInput.value,
+                model: addIhaModelInput.value,
+                weight: addIhaWeightInput.value,
+                serialNumber: addIhaSerialNumberInput.value
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data);
+                } else {
+                    location.reload()
+                    alert("'İHA' successfully created")
+                }
+            });
     }
 
     function deleteIha(ihaID) {
@@ -84,11 +361,13 @@
                     if (data.message) {
                         alert(data);
                     } else {
-                        alert('İHA deleted successfully')
+                        alert("'İHA' deleted successfully")
+                        location.reload()
                     }
                 });
         }
     }
+
 </script>
 
 {% endblock %}

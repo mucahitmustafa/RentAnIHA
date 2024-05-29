@@ -15,10 +15,18 @@ def rentals_view(request):
         return redirect('login')
 
     if request.method == 'POST':
-        if not request.user.is_staff:
-            return HttpResponse('Unauthorized', status=401)
-        return render(request, 'rentals_new.html')
-        pass  # TODO: Sadece Yönetici. Kiralama oluşturma sayfası.
+        try:
+            _rental = Rental()
+            _body = json.loads(request.body)
+            _rental.start_date = _body['startDate']
+            _rental.end_date = _body['endDate']
+            _rental.user = User.objects.get(id=_body['userId'])
+            _rental.iha = Iha.objects.get(id=_body['ihaId'])
+            _rental.save()
+        except Exception as e:
+            return HttpResponse('{}'.format(e), status=400)
+
+        return HttpResponse('{}', status=200)
 
     else:
         if request.user.is_staff:
@@ -152,8 +160,21 @@ def ihas_view(request):
         if not request.user.is_staff:
             return HttpResponse('Unauthorized', status=401)
 
-        return render(request, 'ihas_new.html')
-        pass  # TODO: Sadece Yönetici. İHA oluşturma sayfası.
+        try:
+            _iha = Iha()
+            _body = json.loads(request.body)
+            _cat = Category.objects.get(name=_body['category'])
+            _iha.category = _cat
+            _iha.brand = _body['brand']
+            _iha.model = _body['model']
+            _iha.weight = _body['weight']
+            _iha.serial_number = _body['serialNumber']
+            _iha.added_date = timezone.now()
+            _iha.save()
+        except Exception as e:
+            return HttpResponse('{}'.format(e), status=400)
+
+        return HttpResponse('{}', status=200)
 
     else:
         _ihas = Iha.objects.filter()
@@ -185,8 +206,20 @@ def iha_view(request, id):
     elif request.method == 'PUT':
         if not request.user.is_staff:
             return HttpResponse('Unauthorized', status=401)
-        return render(request, 'ihas_edit.html')
-        pass  # TODO: Sadece Yönetici. İHA bilgilerini güncelleme sayfası.
 
-    else:
-        return render(request, 'ihas_detail.html', {'iha': _iha})
+        try:
+            _iha = get_object_or_404(Iha, id=id)
+            _body = json.loads(request.body)
+            _cat = Category.objects.get(name=_body['category'])
+            _iha.category = _cat
+            _iha.brand = _body['brand']
+            _iha.model = _body['model']
+            _iha.weight = _body['weight']
+            _iha.serial_number = _body['serialNumber']
+            _iha.save()
+        except Exception as e:
+            return HttpResponse('{}'.format(e), status=400)
+
+        return HttpResponse('{}', status=200)
+
+    return redirect('ihas')
