@@ -16,7 +16,8 @@ class Iha(models.Model):
     weight = models.IntegerField()
     serial_number = models.CharField(max_length=20, unique=True)
     added_date = models.DateTimeField()
-    category = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey("Category", on_delete=models.SET_NULL,
+                                 null=True)  # If the category is deleted, set it to NULL.
 
     def __str__(self):
         return f"{self.brand} - {self.model}"
@@ -24,7 +25,8 @@ class Iha(models.Model):
 
 class Rental(models.Model):
     iha = models.ForeignKey("Iha", on_delete=models.CASCADE, null=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             null=False)  # If the user is deleted, delete the rental.
     start_date = models.DateField()
     end_date = models.DateField()
     is_returned = models.BooleanField(default=False)

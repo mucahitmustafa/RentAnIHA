@@ -140,12 +140,15 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 ACCOUNT_LOGIN_ON_SIGNUP = False
 LOGOUT_REDIRECT_URL = '/login/'
+
+# Django REST framework settings
 REST_FRAMEWORK = {
     'DATE_FORMAT': "%Y-%m-%d",
     'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
     'DATE_INPUT_FORMATS': ["%Y-%m-%d"]
 }
 
+# Logging configuration
 log_file = 'logs/rentiha.log'
 logging.basicConfig(
     level=logging.DEBUG,

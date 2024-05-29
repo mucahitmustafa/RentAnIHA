@@ -19,7 +19,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
 urlpatterns = [
-    path('', include('members.urls')),
+    path('', include('members.urls')),  # Redirect to members.urls as default
     path('members/', include('members.urls')),
     path('members/', include('allauth.urls')),
     path('admin/', admin.site.urls),

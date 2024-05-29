@@ -16,7 +16,7 @@ def rentals_view(request):
         logger.critical('Rentals request from anonymous user!')
         return redirect('login')
 
-    if request.method == 'POST':
+    if request.method == 'POST':  # Rent IHA
         try:
             _rental = Rental()
             _body = json.loads(request.body)
@@ -34,7 +34,7 @@ def rentals_view(request):
 
         return HttpResponse('{}', status=200)
 
-    else:
+    else:  # List rentals
         if request.user.is_staff:
             _rentals = Rental.objects.all()
         else:
@@ -52,7 +52,7 @@ def rental_view(request, id):
 
     _rental = get_object_or_404(Rental, id=id)
 
-    if request.method == 'DELETE' and request.user.is_staff:
+    if request.method == 'DELETE' and request.user.is_staff:  # Delete rental. Usable for only admins.
         try:
             _rental.delete()
             logger.debug(f"Rental '{id}' deleted.")
@@ -62,6 +62,7 @@ def rental_view(request, id):
             return HttpResponse('{}'.format(e), status=400)
 
     elif request.method == 'PUT' and (request.user.is_staff or _rental.user == request.user):
+        # Update rental. Usable for admins and the user who rented the IHA.
         try:
             _body = json.loads(request.body)
             _rental = Rental.objects.get(id=id)
@@ -76,6 +77,7 @@ def rental_view(request, id):
         return HttpResponse('{}', status=200)
 
     elif request.method == 'PATCH' and (request.user.is_staff or _rental.user == request.user):
+        # Return rental. Usable for admins and the user who rented the IHA.
         try:
             _rental.is_returned = True
             _rental.save()
@@ -113,7 +115,7 @@ def member_view(request, id):
         return HttpResponse('Unauthorized', status=401)
 
     _user = get_object_or_404(User, id=id)
-    if request.method == 'DELETE':
+    if request.method == 'DELETE':  # Delete user
         try:
             _user.delete()
             logger.debug(f"User '{id}' deleted.")
@@ -134,7 +136,7 @@ def iha_categories_view(request):
         logger.critical('Non-staff member request!')
         return HttpResponse('Unauthorized', status=401)
 
-    if request.method == 'POST':
+    if request.method == 'POST':   # Add category.
         if not request.user.is_staff:
             logger.critical('Unauthorized category request!')
             return HttpResponse('Unauthorized', status=401)
@@ -151,7 +153,7 @@ def iha_categories_view(request):
             logger.error("Failure to add category. Error: '{}'".format(e))
             return HttpResponse('{}'.format(e), status=400)
 
-    else:
+    else:  # List categories.
         _categories = Category.objects.all()
         if not _categories.exists():
             _categories = []
@@ -163,7 +165,7 @@ def iha_category_view(request, id):
         logger.critical('Category request from anonymous user!')
         return redirect('login')
 
-    if request.user.is_staff and request.method == 'PUT':
+    if request.user.is_staff and request.method == 'PUT':  # Update category. Usable for only admins.
         try:
             _category = get_object_or_404(Category, id=id)
             _body = json.loads(request.body)
@@ -176,7 +178,7 @@ def iha_category_view(request, id):
 
         return HttpResponse('{}', status=200)
 
-    elif request.user.is_staff and request.method == 'DELETE':
+    elif request.user.is_staff and request.method == 'DELETE':  # Delete category. Usable for only admins.
         try:
             _category = get_object_or_404(Category, id=id)
             _category.delete()
@@ -213,7 +215,7 @@ def ihas_view(request):
         logger.critical('IHAs request from anonymous user!')
         return redirect('login')
 
-    if request.method == 'POST':
+    if request.method == 'POST':  # Add IHA. Usage for only admins.
         if not request.user.is_staff:
             logger.critical('Unauthorized IHA request!')
             return HttpResponse('Unauthorized', status=401)
@@ -236,7 +238,7 @@ def ihas_view(request):
 
         return HttpResponse('{}', status=200)
 
-    else:
+    else:  # List IHAs.
         _ihas = Iha.objects.all()
         if not _ihas.exists():
             _ihas = []
@@ -255,7 +257,7 @@ def iha_view(request, id):
 
     _iha = get_object_or_404(Iha, id=id)
 
-    if request.method == 'DELETE':
+    if request.method == 'DELETE':  # Delete IHA. Usable for only admins.
         if not request.user.is_staff:
             logger.critical('Unauthorized IHA request!')
             return HttpResponse('Unauthorized', status=401)
@@ -267,7 +269,7 @@ def iha_view(request, id):
             logger.error("Failure to delete IHA. Error: '{}'".format(e))
             return HttpResponse('{}'.format(e), status=400)
 
-    elif request.method == 'PUT':
+    elif request.method == 'PUT':  # Update IHA. Usable for only admins.
         if not request.user.is_staff:
             logger.critical('Unauthorized IHA request!')
             return HttpResponse('Unauthorized', status=401)
